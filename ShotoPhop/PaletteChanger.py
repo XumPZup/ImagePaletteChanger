@@ -21,6 +21,8 @@ class PaletteChanger(ImageHandler):
         The method used for the quantization (default 'step')
     num_colors : int
         The number of colors used for the quantization and palette
+    output_file : str
+        The name of the output file
      _-------_
     | Methods |
      -_______-
@@ -44,7 +46,7 @@ class PaletteChanger(ImageHandler):
          ------------
         | Parameters |
          ------------
-        parser : ArgumentParser
+        args : ArgumentParser
             The argument parser of the main program
         '''
         if not args.seed is None:
