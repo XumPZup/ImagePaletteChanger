@@ -25,7 +25,7 @@ class ImageHandler:
         Converts and image to BGR and saves it
     '''
 
-    def __init__(self, image_file, arguments, num_colors, quant_method='step'):
+    def __init__(self, image_file, num_colors, quant_method='step'):
         '''
          ------------
         | Parameters |
@@ -79,7 +79,7 @@ class ImageHandler:
             # Map colors down to the nearest most frequent value
             i = 0
             quantized_hues = hue_channel.copy()
-            while i < num_colors - 1:
+            while i < self.num_colors - 1:
                 quantized_hues[(quantized_hues >= most_frequents[i][0]) & (quantized_hues < most_frequents[i+1][0])] = most_frequents[i][0]
                 i+=1
             # If the smallest value is not 0 then map all the values below to the highest

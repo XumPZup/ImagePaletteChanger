@@ -138,6 +138,7 @@ class PaletteChanger(ImageHandler):
         # Mat the new palette to the original colors
         if self.palette is None: # Randomize palette if there is none
             color_mapping = [(i, randint(0, 180)) for i in unique_hues]
+            print('Palette = ' + ','.join(str(i[1]) for i in color_mapping))
         else:
             color_mapping = [(i, new_color) for i, new_color in zip(unique_hues, self.palette)]
         
