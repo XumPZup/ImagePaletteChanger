@@ -12,8 +12,8 @@ class ImageHandler:
         The file path of the image that will be manipulated
     image : numpy.ndarray
         The image that will be manipulated
-    num_colors : int
-        The number of colors used for the quantization
+    num_colors : list
+        The number of colors used for the quantization (two values for quant_method='hybrid' else one value)
     quant_method : str
         The method used for the quantization (default 'step')
      _-------_
@@ -25,7 +25,7 @@ class ImageHandler:
         Converts and image to BGR and saves it
     '''
 
-    def __init__(self, image_file, num_colors, quant_method='step'):
+    def __init__(self, image_file, num_colors, quant_method='step', debug=False):
         '''
          ------------
         | Parameters |
@@ -43,6 +43,7 @@ class ImageHandler:
         self.image_file = image_file
         self.image = cv2.imread(self.image_file)
         self.quant_method = quant_method
+        self.debug = debug
 
     # Function to map hue to a smaller palette
     def quantize_hues(self, hue_channel):
@@ -51,6 +52,7 @@ class ImageHandler:
         Can use the methods:
             'step' : divides the color space in n equal sectors
             'freq' : quantize the hue based on the n most popular values
+            'hybrid' : quamtize using step and then freq
         The method is pecified during the initialization of the class and
         it's default value is 'step'
          ------------
@@ -65,21 +67,24 @@ class ImageHandler:
             The quantized hue channel
         '''
         # Quantize the hue values to the nearest palette value
-        if self.quant_method == 'step':
+        if self.quant_method == 'step' or self.quant_method == 'hybrid':
             max_hue = 180
-            interval = max_hue // self.num_colors
+            interval = max_hue // self.num_colors[0]
             quantized_hues = (hue_channel // interval) * interval
+            if self.quant_method == 'hybrid':
+                self.quant_method = 'freq'
+                return self.quantize_hues(quantized_hues)
         # Quantize based on color popularity (get the n most frequent colors)
         elif self.quant_method == 'freq':
             # Get the most frequent colors ordered by their value
             most_frequents = sorted(
-                    Counter(hue_channel.flatten()).most_common(self.num_colors),
+                    Counter(hue_channel.flatten()).most_common(self.num_colors[-1]),
                     key=lambda x: x[0]
                     )
             # Map colors down to the nearest most frequent value
             i = 0
             quantized_hues = hue_channel.copy()
-            while i < self.num_colors - 1:
+            while i < self.num_colors[-1] - 1:
                 quantized_hues[(quantized_hues >= most_frequents[i][0]) & (quantized_hues < most_frequents[i+1][0])] = most_frequents[i][0]
                 i+=1
             # If the smallest value is not 0 then map all the values below to the highest

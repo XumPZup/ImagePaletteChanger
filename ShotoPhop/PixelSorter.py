@@ -54,6 +54,7 @@ class PixelSorter(ImageHandler):
         self.range = args.range
         self.quant_method = 'step' if args.method is None else args.method
         self.mode = 'bgr' if args.mode is None else args.mode
+        self.bebug = False if args.debug is None else args.debug
         self.output_file = args.output
        
     
@@ -137,7 +138,9 @@ class PixelSorter(ImageHandler):
         extension = self.image_file.split('.')[1]
         if self.output_file is None:
             self.output_file = 'output.' + extension
-
+        if self.debug:
+        # Save quantized image original and with the new palette
+            self.save_image(image=image_hsv, name='quant.jpg', mode='hsv')
+            self.save_image(image=image_region, name='region.jpg', mode='hsv')
+        # Save final result
         self.save_image(image=sorted_image, name=self.output_file, mode=self.mode)
-        self.save_image(image=image_region, name='region.jpg', mode='hsv')
-        self.save_image(image=image_hsv, name='quant.jpg', mode='hsv')

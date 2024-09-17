@@ -59,6 +59,8 @@ class PaletteChanger(ImageHandler):
             self.num_colors = args.palette_size
             self.palette = args.palette
         self.output_file = args.output
+        self.bebug = False if args.debug is None else args.debug
+        self.quant_method = 'step' if args.method is None else args.method
        
 
     def apply_palette(self, hue_channel, palette_mapping):
@@ -154,6 +156,9 @@ class PaletteChanger(ImageHandler):
         extension = self.image_file.split('.')[1]
         if self.output_file is None:
             self.output_file = 'output.' + extension
-        self.save_image(image_hsv_quantized, f'quantized_img.{extension}', mode='hsv')
-        self.save_image(image_hsv_palette, f'quantized_{self.output_file}', mode='hsv')
+        if self.debug:
+            # Save quantized image original and with the new palette
+            self.save_image(image_hsv_quantized, f'quantized_img.{extension}', mode='hsv')
+            self.save_image(image_hsv_palette, f'quantized_{self.output_file}', mode='hsv')
+        # Save final result
         self.save_image(image_hsv_palette_remap, self.output_file, mode='hsv')
